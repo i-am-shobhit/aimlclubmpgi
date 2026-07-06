@@ -11,7 +11,7 @@
 :root{
   --bg-deep:#080b13;
   --bg-panel:#0f1420;
-  --bg-panel-2:#181f30;
+  --bg-panel-2:#141b2b;
   --line:#232c40;
   --cyan:#4fd1ff;
   --violet:#a78bfa;
@@ -73,14 +73,41 @@ section{padding:90px 0;}
 /* ---------- Nav ---------- */
 nav{
   position:sticky; top:0; z-index:50;
-  backdrop-filter:blur(14px);
-  background:rgba(8,11,19,0.72);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  background:linear-gradient(180deg, rgba(15,20,32,0.92), rgba(8,11,19,0.85));
   border-bottom:1px solid var(--line);
+  box-shadow:0 1px 0 rgba(79,209,255,0.08), 0 12px 30px -14px rgba(0,0,0,0.6);
+}
+nav::after{
+  content:'';
+  position:absolute;
+  left:0; right:0; bottom:-1px;
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--cyan), var(--violet), transparent);
+  opacity:0.5;
 }
 nav .wrap{
-  display:flex; align-items:center; justify-content:space-between;
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
   padding-top:16px; padding-bottom:16px;
 }
+.hamburger{
+  position:absolute; left:28px; top:50%; transform:translateY(-50%);
+  width:34px; height:30px;
+  background:none; border:none; cursor:pointer;
+  display:flex; flex-direction:column; justify-content:center; gap:6px;
+  padding:0; z-index:2;
+}
+.hamburger span{
+  display:block; width:100%; height:2px;
+  background:var(--text); border-radius:2px;
+  transition:transform 0.25s ease, opacity 0.2s ease;
+}
+.hamburger.active span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+.hamburger.active span:nth-child(2){opacity:0;}
+.hamburger.active span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+
 .brand{
   display:flex; align-items:center; gap:10px;
   font-weight:700; font-size:18px; letter-spacing:0.02em;
@@ -95,14 +122,91 @@ nav .wrap{
   0%,100%{opacity:1; transform:scale(1);}
   50%{opacity:0.5; transform:scale(0.8);}
 }
-nav ul{
-  list-style:none; display:flex; gap:32px;
+
+.nav-menu{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.32s ease;
+  border-top:1px solid transparent;
 }
-nav a{
-  color:var(--muted); text-decoration:none; font-size:14px;
-  transition:color 0.2s;
+.nav-menu.open{
+  max-height:260px;
+  border-top:1px solid var(--line);
 }
-nav a:hover{color:var(--text);}
+.nav-menu a{
+  display:block;
+  padding:16px 28px;
+  color:var(--muted);
+  text-decoration:none;
+  font-size:14.5px;
+  border-bottom:1px solid var(--line);
+  transition:color 0.2s, background 0.2s;
+}
+.nav-menu a:hover{color:var(--text); background:rgba(255,255,255,0.03);}
+
+/* ---------- Event strip ---------- */
+.event-strip{
+  background:linear-gradient(90deg, rgba(79,209,255,0.1), rgba(167,139,250,0.1));
+  border-bottom:1px solid var(--line);
+  padding:12px 0;
+  position:relative; z-index:1;
+}
+.event-strip-inner{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  font-size:13.5px;
+}
+.pulse-badge{
+  width:8px; height:8px; border-radius:50%; flex-shrink:0;
+  background:#ff5c5c;
+  box-shadow:0 0 8px 2px rgba(255,92,92,0.6);
+  animation:pulse 1.6s ease-in-out infinite;
+}
+.event-strip-label{
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--cyan); font-weight:600;
+}
+.event-strip-text{color:var(--text); font-weight:500;}
+
+/* ---------- Event poster ---------- */
+.poster-section{padding:36px 0 0; position:relative; z-index:1;}
+.event-poster{
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  background:var(--bg-panel);
+  min-height:220px;
+  display:flex; align-items:center; justify-content:center;
+}
+.event-poster img{width:100%; display:block;}
+.poster-placeholder{
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  color:var(--muted); text-align:center; padding:60px 20px;
+}
+.poster-placeholder .pp-title{font-size:16px; color:var(--text); font-weight:600;}
+.poster-placeholder .pp-hint{
+  font-size:12.5px;
+  font-family:'JetBrains Mono', monospace;
+}
+
+/* ---------- Social section ---------- */
+.social-section{padding:50px 0 10px; text-align:center; position:relative; z-index:1;}
+.social-grid{
+  display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-top:24px;
+}
+.social-btn{
+  display:flex; align-items:center; gap:10px;
+  padding:12px 24px;
+  border-radius:100px;
+  border:1px solid var(--line);
+  background:var(--bg-panel);
+  color:var(--text);
+  text-decoration:none;
+  font-size:14px; font-weight:600;
+  transition:border-color 0.2s, transform 0.2s;
+}
+.social-btn:hover{border-color:var(--cyan); transform:translateY(-2px);}
+.social-btn .ic{font-size:16px;}
 
 /* ---------- Hero ---------- */
 .hero{
@@ -344,20 +448,55 @@ footer .mono{color:var(--cyan);}
 
 <nav>
   <div class="wrap">
+    <button class="hamburger" id="menuToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
     <div class="brand"><span class="dot"></span> AI &amp; ML MPGI</div>
-    <ul>
-      <li><a href="#home">Home</a></li>
-      <li><a href="#team">Team Member</a></li>
-      <li><a href="https://chat.whatsapp.com/C0Lr3MQeIyA6D0v6AaO0bp?s=sw&p=a&mlu=1">Join WhatsApp</a></li>
-    </ul>
+  </div>
+  <div class="nav-menu" id="navMenu">
+    <a href="#home">Home</a>
+    <a href="#team">Team Member</a>
+    <a href="#session">Next Session</a>
+    <a href="#">Join WhatsApp</a>
   </div>
 </nav>
+
+<div class="event-strip">
+  <div class="wrap event-strip-inner">
+    <span class="pulse-badge"></span>
+    <span class="event-strip-label">Upcoming Event</span>
+    <span class="event-strip-text">Neural Networks from Scratch — Workshop · 13 July 2026, 4:00 PM</span>
+  </div>
+</div>
+
+<div class="wrap poster-section">
+  <div class="event-poster">
+    <img src="" alt="Event Poster" id="posterImg" style="display:none;">
+    <div class="poster-placeholder" id="posterPlaceholder">
+      <span class="pp-title">📌 Event poster yahan dikhega</span>
+      <span class="pp-hint">img id="posterImg" ke src mein apna poster image link daalein</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap social-section">
+  <div class="eyebrow" style="justify-content:center;">Connect With Us</div>
+  <h3 style="font-size:22px; font-weight:700;">Join Social Media</h3>
+  <div class="social-grid">
+    <a href="#" class="social-btn"><span class="ic">📷</span> Instagram</a>
+    <a href="#" class="social-btn"><span class="ic">💼</span> LinkedIn</a>
+    <a href="#" class="social-btn"><span class="ic">🐦</span> X / Twitter</a>
+    <a href="#" class="social-btn"><span class="ic">▶️</span> YouTube</a>
+    <a href="#" class="social-btn"><span class="ic">💬</span> WhatsApp</a>
+    <a href="#" class="social-btn"><span class="ic">🎮</span> Discord</a>
+  </div>
+</div>
 
 <section class="hero" id="home">
   <div class="wrap">
     <div class="eyebrow">MPGI, Kanpur • AI &amp; ML Club</div>
-    <h1>From Neural Networks<br>to Real Projects.</h1>
-    <p class="sub">AI &amp; ML MPGI is the official Artificial Intelligence and Maharana Pratap Group of Institutions, Kanpur. Here, students learn AI/ML together, build real projects, and grow a strong tech community by learning from each other.</p>
+    <h1>From neural networks<br>to real projects.</h1>
+    <p class="sub">AI &amp; ML MPGI is the official Artificial Intelligence and Machine Learning club of Meerut Polytechnic and Group of Institutions, Kanpur. Here, students learn AI/ML together, build real projects, and grow a strong tech community by learning from each other.</p>
     <div class="cta-row">
       <a href="#session" class="btn btn-primary">Next Session Dekho →</a>
       <a href="#links" class="btn btn-ghost">Resources</a>
@@ -383,12 +522,12 @@ footer .mono{color:var(--cyan);}
         <p class="desc">Is session mein hum ek chhota neural network bina kisi framework ke code karenge, taaki backpropagation actually samajh aaye, na ki black-box lage. Laptop zaroor laayein.</p>
       </div>
       <div class="session-right">
-        <div class="detail-row"><span class="k">Date</span><span class="v" id="sessionDate">Monday, 13 July 2026</span></div>
+        <div class="detail-row"><span class="k">Date</span><span class="v" id="sessionDate">Sunday, 13 July 2026</span></div>
         <div class="detail-row"><span class="k">Time</span><span class="v">4:00 PM – 6:00 PM</span></div>
         <div class="detail-row"><span class="k">Venue</span><span class="v">CS Lab 2, Campus</span></div>
         <div class="countdown" id="countdown">
-          <div class="box"><div class="n" id="cd-days">--</div><div class="u">Day</div></div>
-          <div class="box"><div class="n" id="cd-hours">--</div><div class="u">Hours</div></div>
+          <div class="box"><div class="n" id="cd-days">--</div><div class="u">Din</div></div>
+          <div class="box"><div class="n" id="cd-hours">--</div><div class="u">Ghante</div></div>
           <div class="box"><div class="n" id="cd-mins">--</div><div class="u">Min</div></div>
         </div>
       </div>
@@ -403,13 +542,13 @@ footer .mono{color:var(--cyan);}
     <p class="sec-desc">Group join karna ho, resources chahiye ya submission karni ho — sab yahin se.</p>
 
     <div class="links-grid">
-      <a href="https://chat.whatsapp.com/C0Lr3MQeIyA6D0v6AaO0bp?s=sw&p=a&mlu=1" class="link-card">
+      <a href="#" class="link-card">
         <span class="arrow">↗</span>
         <div class="icon">💬</div>
         <div class="title">WhatsApp Group</div>
         <div class="desc">Announcements aur daily discussion ke liye join karein.</div>
       </a>
-      <a href="https://drive.google.com/drive/folders/1_GkTGMAwu103ifgsx_wIrYeYhxcKdbEI?usp=drive_link" class="link-card">
+      <a href="#" class="link-card">
         <span class="arrow">↗</span>
         <div class="icon">🗂️</div>
         <div class="title">Drive — Slides &amp; Notes</div>
@@ -425,7 +564,7 @@ footer .mono{color:var(--cyan);}
         <span class="arrow">↗</span>
         <div class="icon">📝</div>
         <div class="title">Membership Form</div>
-        <div class="desc">Naye member ho? Yahan register karein.</div>
+        <div class="desc">Naye member ho? Yahan register karein — 2 min lagenge.</div>
       </a>
       <a href="#" class="link-card">
         <span class="arrow">↗</span>
@@ -433,7 +572,14 @@ footer .mono{color:var(--cyan);}
         <div class="title">Event Calendar</div>
         <div class="desc">Saari upcoming sessions aur deadlines ek jagah.</div>
       </a>
+      <a href="#" class="link-card">
+        <span class="arrow">↗</span>
+        <div class="icon">🏆</div>
+        <div class="title">Kaggle Team Page</div>
+        <div class="desc">Club competitions aur leaderboard track karein.</div>
+      </a>
     </div>
+  </div>
 </section>
 
 <section id="team">
@@ -445,9 +591,9 @@ footer .mono{color:var(--cyan);}
     <div class="team-grid">
       <div class="member-card">
         <div class="avatar">S</div>
-        <div class="name">Shiv Bahadur Singh</div>
-        <div class="role">Event Coordinator</div>
-        <div class="tag">Assistance Professir</div>
+        <div class="name">Shobhit</div>
+        <div class="role">President</div>
+        <div class="tag">Python · Web Dev</div>
       </div>
       <div class="member-card">
         <div class="avatar">T</div>
@@ -484,6 +630,20 @@ footer .mono{color:var(--cyan);}
 </footer>
 
 <script>
+// ---------- Hamburger menu toggle ----------
+const menuToggle = document.getElementById('menuToggle');
+const navMenu = document.getElementById('navMenu');
+menuToggle.addEventListener('click', () => {
+  menuToggle.classList.toggle('active');
+  navMenu.classList.toggle('open');
+});
+navMenu.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    menuToggle.classList.remove('active');
+    navMenu.classList.remove('open');
+  });
+});
+
 // ---------- Neural background animation ----------
 const canvas = document.getElementById('netbg');
 const ctx = canvas.getContext('2d');
